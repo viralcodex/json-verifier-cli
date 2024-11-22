@@ -3,8 +3,8 @@ This is a JSON parser created as a exercise in Javascript for <a href="https://g
 This code can be used to check whether .json files are valid or not.
 
 <section><h2>Implementation</h2></section>
-I would specially like to mention this repo by <a href="https://github.com/eliasm307/coding-challenges/tree/main/packages/json-parser">EliaSM</a>
-which helped me understand the approach and write a version of mine. Please check their code out written in Typescript and is much better in my opinion. (I'm still learning)
+I would specially like to mention this repo by <a href="https://github.com/eliasm307/coding-challenges/tree/main/packages/json-parser">EliaSM</a> which helped me understand the approach and write a version of mine. Please check their code out written in Typescript and is much better in my opinion (I'm still learning).
+
 I use Javascript and go through character by character for the whole data, then stop whenever there is an invalid character or pattern in the JSON data from the file.
 This is similar to generator function used in the above repository and this approach helps in parsing large data by not parsing it all at once but one by one and stopping whenever there is an error or invalidity is found.
 (Even though generator function is present in JS as well, I tried to write a non-generator approach using class-object route to learn something new)
