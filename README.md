@@ -6,17 +6,25 @@ You can verify a single file or a folder consisting of JSON files.
 
 <section><h2>How to run</h2></section>
 <h3>For Running in CLI</h3>
-<li>Open your terminal and execute <code>npm install -g json-verifier</code></li>
+<li>Open your terminal and execute:</li> 
+<p></p> 
+<pre><code>npm install -g json-verifier</code></pre>
 <li>After installing, open your terminal and run the command <code>json-verifier</code>, you will get the options on how to use the tool.</li>
-<code>Options:
+<p></p>
+<pre>
+  Options:
   -V, --version                 output the version number
   -f, --file <file_path>        provide the file path for the JSON file to be checked
   -flr, --folder <folder_path>  provide the folder patah with JSON files to be checked
-  -h, --help                    display help for command</code>
-
+  -h, --help                    display help for command
+  </pre>
 <h3>For Already Present Test Files in the project</h3>
-<li>Clone the repo and install the dependencies by running <code>npm install</code> in terminal.</li>
-<li>Run <code>npm test</code> to run the test files present in the repository.</li>
+<li>Clone the repo and install the dependencies by running the following command: </li>
+  <p></p>
+  <pre><code>npm install</code></pre>
+<li>Execute the command to run the test files present in the repository</li>
+  <p></p> 
+  <pre><code>npm test</code></pre>
 <li>Note: You can remove/add any test files you want and just change the <code>directories</code> array in <code>index.test.js</code> file if deleting/adding any new folder.</li>
 
 <section><h2>Implementation</h2></section>
