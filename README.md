@@ -1,4 +1,4 @@
-<section><h2>JSON VERIFIER (AND PARSER)</h2></section>
+<section><h2>JSON Verifier (and Parser)</h2></section>
 This is a CLI JSON verifier and parser created as an exercise in Javascript for <a href="https://github.com/CodingChallengesFYI">Coding challenges</a> by John Crickett.
 This code can be used to check whether .json files are valid or not and also parse the JSON if it is valid. 
 You can verify a single file or a folder consisting of JSON files.
