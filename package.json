@@ -1,12 +1,16 @@
 {
   "name": "json-verifier-cli",
-  "version":"0.0.1",
+  "version": "0.0.1",
   "description": "JSON VERIFIER CLI v0.0.1\nCheck whether the JSON files are valid or not and parse one or all of them together.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/viralcodex/json-verifier-cli.git"
   },
-  "keywords": ["json", "cli", "tool"],
+  "keywords": [
+    "json",
+    "cli",
+    "tool"
+  ],
   "author": "Aviral Shukla",
   "license": "MIT",
   "dependencies": {
@@ -28,7 +32,7 @@
     "start": "node index.js",
     "test": "jest"
   },
-  "bin":{
-    "json-verifier":"./bin/json-verifier.cli.js"
+  "bin": {
+    "json-verifier": "./bin/json-verifier.cli.js"
   }
 }
