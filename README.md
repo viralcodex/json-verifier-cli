@@ -6,14 +6,14 @@ You can verify a single file or a folder consisting of JSON files.
 
 <section><h2>How to run</h2></section>
 <h3>For Running in CLI</h3>
-Open your terminal and execute <code>npm install -g json-verifier</code>
-After installing, open your terminal and run the command <code>json-verifier</code>, you will get the options on how to use the tool. 
+>Open your terminal and execute <code>npm install -g json-verifier</code>
+>After installing, open your terminal and run the command <code>json-verifier</code>, you will get the options on how to use the tool. 
 ![image](https://github.com/user-attachments/assets/e8fcfd8b-2278-4de7-a880-5e2c539155ff)
 
 <h3>For Already Present Test Files in the project</h3>
-Just clone the repo and install the dependencies by running <code>npm install</code> in terminal.
-Then just run <code>npm test</code> to run the test files present in the repository.
-You can remove/add any test files you want and just change the <code>directories</code> array in <code>index.test.js</code> file if deleting/adding any new folder.
+>Clone the repo and install the dependencies by running <code>npm install</code> in terminal.
+>Run <code>npm test</code> to run the test files present in the repository.
+>Note: You can remove/add any test files you want and just change the <code>directories</code> array in <code>index.test.js</code> file if deleting/adding any new folder.
 
 <section><h2>Implementation</h2></section>
 I would specially like to mention this repo by <a href="https://github.com/eliasm307/coding-challenges/tree/main/packages/json-parser">EliaSM</a> which helped me understand the approach and write a version of mine. Please check their code out written in Typescript and is much better in my opinion (I'm still learning).
