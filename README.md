@@ -1,4 +1,4 @@
-<section><h2>JSON VERIFIER AND PARSER</h2></section>
+<section><h2>JSON VERIFIER (AND PARSER)</h2></section>
 This is a CLI JSON verifier and parser created as an exercise in Javascript for <a href="https://github.com/CodingChallengesFYI">Coding challenges</a> by John Crickett.
 This code can be used to check whether .json files are valid or not and also parse the JSON if it is valid. 
 You can verify a single file or a folder consisting of JSON files.
@@ -6,18 +6,21 @@ You can verify a single file or a folder consisting of JSON files.
 
 <section><h2>How to run</h2></section>
 <h3>For Running in CLI</h3>
-> Open your terminal and execute <code>npm install -g json-verifier</code>
-> After installing, open your terminal and run the command <code>json-verifier</code>, you will get the options on how to use the tool.
-![image](https://github.com/user-attachments/assets/0523213b-7f30-4169-b65e-38384788654c)
-
+<li>Open your terminal and execute <code>npm install -g json-verifier</code></li>
+<li>After installing, open your terminal and run the command <code>json-verifier</code>, you will get the options on how to use the tool.</li>
+<code>Options:
+  -V, --version                 output the version number
+  -f, --file <file_path>        provide the file path for the JSON file to be checked
+  -flr, --folder <folder_path>  provide the folder patah with JSON files to be checked
+  -h, --help                    display help for command</code>
 
 <h3>For Already Present Test Files in the project</h3>
-> Clone the repo and install the dependencies by running <code>npm install</code> in terminal.
-> Run <code>npm test</code> to run the test files present in the repository.
->Note: You can remove/add any test files you want and just change the <code>directories</code> array in <code>index.test.js</code> file if deleting/adding any new folder.
+<li>Clone the repo and install the dependencies by running <code>npm install</code> in terminal.</li>
+<li>Run <code>npm test</code> to run the test files present in the repository.</li>
+<li>Note: You can remove/add any test files you want and just change the <code>directories</code> array in <code>index.test.js</code> file if deleting/adding any new folder.</li>
 
 <section><h2>Implementation</h2></section>
-I would specially like to mention this repo by <a href="https://github.com/eliasm307/coding-challenges/tree/main/packages/json-parser">EliaSM</a> which helped me understand the approach and write a version of mine. Please check their code out written in Typescript and is much better in my opinion (I'm still learning).
+I would specially like to mention this repo by <a href="https://github.com/eliasm307/coding-challenges/tree/main/packages/json-parser">EliaSM</a> which helped me understand the approach and write a version of mine. Please check their code out written in Typescript and try it out!!(I'm still learning).
 <p></p>
 For CLI support, I used <a href="https://www.npmjs.com/package/commander">Commander.js</a> and <a href="https://www.npmjs.com/package/chalk">Chalk</a>.
 <p></p>
@@ -27,5 +30,7 @@ This is similar to generator function used in the above repository and this appr
 
 <section><h2>Testing</h2></section>
 I have used Jest for testing and test files are from <a href="https://codingchallenges.fyi/challenges/challenge-json-parser/">Coding Challenges</a> (step1 to step4) and from official json website (Step5) which contains 40 <a href="https://www.json.org/JSON_checker/test.zip">standard tests</a> for checking whether a JSON is valid or not.
+
+<p></p>
 
 Thanks for using my project and reading till here!
