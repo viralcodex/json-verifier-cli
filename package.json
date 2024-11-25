@@ -1,6 +1,6 @@
 {
-  "name": "json-parser-cli",
-  "version":"1.0.0",
+  "name": "json-verifier-cli",
+  "version":"0.0.1",
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^12.1.0",
@@ -21,6 +21,6 @@
     "test": "jest"
   },
   "bin":{
-    "jsonparser":"./bin/json-parser.cli.js"
+    "json-verifier":"./bin/json-parser.cli.js"
   }
 }
