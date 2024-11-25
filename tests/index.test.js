@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import jsonParser from './index';
+import jsonParser from '../index.js';
 
 describe('JSON PARSING', () => {
-    const directories = ['./tests/step1/', './tests/step2/', './tests/step3/', './tests/step4/', './tests/step5/']
+    const directories = ['./step1/', './step2/', './step3/', './step4/', './step5/']
 
     function basicTests(jsonValue) {
         const parsedStringWithLibrary = JSON.stringify(jsonValue);
