@@ -47,8 +47,9 @@ class JsonParser {
                     if (this.text[this.index] === "\\") {
                         this.index++;
                         if (illegalEscapeChar.includes(this.text[this.index])) {
+                            const a = this.text[this.index];
                             isEndOfTokens = true;
-                            throw new Error(`Illegal escape character in string: ${this.text[this.index]}`);
+                            throw new Error(`Illegal escape character in string`);
                         }
 
                         //creating unicode characters from string tokens

@@ -1,6 +1,12 @@
 {
+  "name": "json-parser-cli",
+  "version":"1.0.0",
   "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
     "fs": "^0.0.1-security",
+    "inquirer": "^12.1.0",
+    "ora": "^8.1.1",
     "path": "^0.12.7"
   },
   "type": "module",
@@ -13,5 +19,8 @@
   "scripts": {
     "start": "node index.js",
     "test": "jest"
+  },
+  "bin":{
+    "jsonparser":"./bin/json-parser.cli.js"
   }
 }
