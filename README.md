@@ -1,6 +1,6 @@
 <section><h2>JSON Verifier (and Parser)</h2></section>
 This is a CLI JSON verifier and parser created as an exercise in Javascript for <a href="https://github.com/CodingChallengesFYI">Coding challenges</a> by John Crickett.
-This code can be used to check whether .json files are valid or not and also parse the JSON if it is valid. 
+This code can be used to check whether .json files are valid or not and also parse the JSON if it is valid through CLI.
 You can verify a single file or a folder consisting of JSON files.
 (Any improvements or suggestions are welcome! Please raise an issue and we can discuss)
 
@@ -11,13 +11,26 @@ You can verify a single file or a folder consisting of JSON files.
 <pre><code>npm install -g json-verifier</code></pre>
 <li>After installing, open your terminal and run the command <code>json-verifier</code>, you will get the options on how to use the tool.</li>
 <p></p>
+
 <pre>
   Options:
-  -V, --version                 output the version number
-  -f, --file <file_path>        provide the file path for the JSON file to be checked
-  -flr, --folder <folder_path>  provide the folder patah with JSON files to be checked
-  -h, --help                    display help for command
-  </pre>
+  -V, --version                   output the version number
+  -f, --file <file_path>          provide the file path for the JSON file to be checked
+  -flr, --folder <folder_path>    provide the folder patah with JSON files to be checked
+  -h, --help                      display help for command
+</pre>
+
+<h3>For using the package in your code to check for JSON object validity and parse it</h3>
+<li>Install the package as above, then take reference from below to import and use it</li>
+<pre>
+  <code>
+    import jsonParser from 'json-verifier-cli';
+    const obj = {"key":"value", "list":true}
+    console.log(jsonParser(JSON.stringify(obj)));
+  </code>
+</pre>
+<li>Will update the support for this scenario to better handle the usages.</li>
+
 <h3>For Already Present Test Files in the project</h3>
 <li>Clone the repo and install the dependencies by running the following command: </li>
   <p></p>
@@ -37,8 +50,14 @@ This is similar to generator function used in the above repository and this appr
 (Even though generator function is present in JS as well, I tried to write a non-generator approach using class-object route to learn something new)
 
 <section><h2>Testing</h2></section>
-I have used Jest for testing and test files are from <a href="https://codingchallenges.fyi/challenges/challenge-json-parser/">Coding Challenges</a> (step1 to step4) and from official json website (Step5) which contains 40 <a href="https://www.json.org/JSON_checker/test.zip">standard tests</a> for checking whether a JSON is valid or not.
+I have used Jest for testing and test files are from <a href="https://codingchallenges.fyi/challenges/challenge-json-parser/">Coding Challenges</a> (step1 to step4) and from official <a href="https://www.json.org/">JSON website</a> (Step5) which contains 40 <a href="https://www.json.org/JSON_checker/test.zip">standard tests</a> for checking whether a JSON is valid or not.
 
 <p></p>
 
-Thanks for using my project and reading till here!
+<section><h2>Future Updates (In works)</h2></section>
+<li>Better Error reporting and debugging support</li>
+<li>Better Support to validate and parse your JSONs in-code rather just CLI</li>
+...and much more
+
+<p></p>
+Thanks for using my project and reading till here! Any help is much appreciated!!
