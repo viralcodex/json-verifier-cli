@@ -6,6 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/viralcodex/json-verifier-cli.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "json",
     "cli",
