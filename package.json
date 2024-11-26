@@ -19,7 +19,8 @@
     "fs": "^0.0.1-security",
     "inquirer": "^12.1.0",
     "ora": "^8.1.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "semantic-release": "^24.2.0"
   },
   "type": "module",
   "devDependencies": {
@@ -30,7 +31,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "jest"
+    "test": "jest",
+    "semantice-release": "semantic-release"
   },
   "bin": {
     "json-verifier": "./bin/json-verifier.cli.js"
