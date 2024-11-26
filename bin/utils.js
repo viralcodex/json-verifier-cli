@@ -26,7 +26,7 @@ export default function verifyFiles(dirPath, flag) {
                 const parsedData = jsonParser(data);
 
                 if (parsedData) {
-                    console.log(chalk.green(`${file} : Valid Json`));
+                    console.log(chalk.green(`${file}: Valid Json`));
                 }
                 valid++;
             } catch (error) {
