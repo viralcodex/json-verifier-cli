@@ -42,4 +42,5 @@ jobs:
       - name: Release
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          GITHUB_TOKEN: ${{secrets.github_token}}
         run: npx semantic-release
