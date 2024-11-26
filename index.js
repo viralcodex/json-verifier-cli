@@ -1,7 +1,4 @@
 
-//this is a custom value and can be configured as needed
-//there's no official max limit to JSON depth
-
 const maxDepth = 19;
 
 const numbers = '0123456789';
@@ -11,7 +8,6 @@ const keywords = ['true', 'false', 'null'];
 const indentation = " \r\n\t";
 const illegalEscapeChar = 'x0\n ';
 let isEndOfTokens = false;
-
 
 class JsonParser {
 
