@@ -1,12 +1,13 @@
+import contants from "./lib/constants.js";
 
 const maxDepth = 19;
-
 const numbers = '0123456789';
 const numberTokens = numbers + '.eE-+';
 const symbols = '{}[]:,';
 const keywords = ['true', 'false', 'null'];
 const indentation = " \r\n\t";
 const illegalEscapeChar = 'x0\n ';
+const escapeMap = { b: "\b", t: "\t", f: "\f", r: "\r", n: "\n" };
 let isEndOfTokens = false;
 
 class JsonParser {
@@ -14,12 +15,56 @@ class JsonParser {
     constructor(text) {
         this.text = text;
         this.index = 0;
+        this.line = 1;
+        this.column = 1;
+        this.tabWidth = 4;
+    }
+
+    updatePosition(char) {
+        if (char === '\n') {
+            this.line++;
+            this.column = 1;
+        }
+        else if (char === '\t') {
+            this.column += this.column - ((this.column - 1) % this.tabWidth);
+        }
+        else {
+            this.column++;
+        }
+
+    }
+
+    errorReporter(eCode, token) {
+
+        const lines = this.text.split("\n");
+        const errorLine = lines[this.line - 1].trim() || ""; // Get the line with the error
+
+        // const marker = " ".repeat(this.column - shifter - (shifter <= 1 ? 0 : 1)) + "^"; // Place marker at the column
+        let indexOfInvalidToken = errorLine.lastIndexOf(token) < 0 ? 0 : errorLine.lastIndexOf(token);
+        if (eCode === "e010")
+            indexOfInvalidToken = 0;
+        if (eCode === "e001" || eCode === "e002" || eCode === "e004")
+            indexOfInvalidToken = errorLine.indexOf(token) < 0 ? 0 : errorLine.indexOf(token);
+        if (eCode === "e003" || eCode === "e011" || eCode === "e014" || eCode === "e018" || eCode === "e019")
+            indexOfInvalidToken = errorLine.length;
+
+        const spaceFormula = this.column.length - token?.length - 1 > indexOfInvalidToken ?
+            (this.column.length - token?.length) : indexOfInvalidToken;
+
+        const marker = " ".repeat(spaceFormula) + "^";
+
+        // Construct detailed error message
+        const errorContext = `${contants[eCode]} at line ${this.line}:\n${errorLine}\n${marker}\n`;
+
+        throw new Error(errorContext);
     }
 
     nextToken() {
         while (this.index < this.text.length) {
             isEndOfTokens = false;
             const char = this.text[this.index];
+
+            this.updatePosition(char);
 
             if (indentation.includes(char)) { //for space, \n, \t, etc in the string
                 this.index++;
@@ -34,18 +79,22 @@ class JsonParser {
             if (this.text[this.index] === '"') { //for checking strings
                 let token = "";
                 while (this.text[++this.index] != '"') {
+                    this.updatePosition(this.text[this.index]);
                     if (this.text[this.index] === "\n" || this.text[this.index] === "\t") {
                         isEndOfTokens = true;
-                        throw new Error(`Cannot have a tab or new line inside a string`);
+
+                        this.errorReporter("e001", this.text[this.index]);
                     }
 
                     //unicode escape characters
                     if (this.text[this.index] === "\\") {
+                        this.updatePosition(this.text[this.index]);
                         this.index++;
                         if (illegalEscapeChar.includes(this.text[this.index])) {
-                            const a = this.text[this.index];
+                            const a = this.text[this.index - 1];
                             isEndOfTokens = true;
-                            throw new Error(`Illegal escape character in string`);
+
+                            this.errorReporter("e002", a);
                         }
 
                         //creating unicode characters from string tokens
@@ -58,16 +107,10 @@ class JsonParser {
                             continue;
                         }
                         // handle special escape characters
-                        if (this.text[this.index] === 'b') {
-                            token += "\b"; continue;
-                        } else if (this.text[this.index] === 't') {
-                            token += "\t"; continue;
-                        } else if (this.text[this.index] === 'f') {
-                            token += "\f"; continue;
-                        } else if (this.text[this.index] === 'r') {
-                            token += "\r"; continue;
-                        } else if (this.text[this.index] === 'n') {
-                            token += "\n"; continue;
+
+                        if (escapeMap[this.text[this.index]]) {
+                            token += escapeMap[this.text[this.index]];
+                            continue;
                         }
                     }
 
@@ -76,53 +119,62 @@ class JsonParser {
 
                 if (this.text[this.index] !== '"') {
                     isEndOfTokens = true;
+
+                    this.errorReporter("e003", token);
                     // e.g. if we hit the end of the string without a closing quote
-                    throw new Error(`Unexpected end of string`);
                 }
                 this.index++;
                 return token;
             }
 
-            if (char === "'") {
+            if (char === "'") { //for {'key'...}
                 isEndOfTokens = true;
-                throw new Error("Invalid use of single quotes in JSON. Use double quotes instead.");
+                this.errorReporter("e004", "'");
             }
 
-            //numbers
+            //parsing numbers
             if (numberTokens.includes(char) || char === "-") {
                 //leading zeroes not allowed
                 if (this.text[this.index] === '0' && numbers.includes(this.text[this.index + 1])) {
                     isEndOfTokens = true;
-                    throw new Error('Numbers cannot have leading zeroes');
+                    this.errorReporter("e005", this.text[this.index]);
                 }
+
                 let numStr = this.text[this.index];
+
                 while (numberTokens.includes(this.text[++this.index])) {
+                    this.updatePosition(this.text[this.index]);
                     numStr += this.text[this.index];
                 }
-                numStr = Number(numStr);
-                if (isNaN(numStr)) {
+
+                const parsedNumber = Number(numStr);
+
+                if (isNaN(parsedNumber)) {
                     isEndOfTokens = true;
-                    throw new Error('Invalid number format');
+                    this.errorReporter("e006", numStr.toString());
                 }
-                return numStr
+
+                return parsedNumber
             }
 
-            //boolean and null strings and values
+            //boolean and null strings and values,
             if (/[a-zA-Z]/.test(char)) {
                 let alphaToken = char;
                 while (/[a-zA-Z]/.test(this.text[++this.index])) {
+                    this.updatePosition(this.text[this.index]);
                     alphaToken += this.text[this.index];
                 }
 
                 if (!keywords.includes(alphaToken)) {
                     isEndOfTokens = true;
-                    throw new Error(`Invalid keyword/character: ${alphaToken}`);
+                    this.errorReporter("e007", alphaToken);
                 }
 
                 return alphaToken === keywords[0] ? true : alphaToken === keywords[1] ? false : null;
             }
             isEndOfTokens = true;
-            throw new Error(`Unexpected Character: ${char}`);
+            this.errorReporter("e008")
+            throw new Error(`Unexpected Character: ${char} at line ${this.line}, column ${this.column}`);
         }
 
         isEndOfTokens = true;
@@ -140,11 +192,11 @@ export default function jsonParser(text) {
     // Ensure there are no unexpected tokens after the JSON data
     if (extraTokens !== null) {
         isEndOfTokens = false;
-        throw new Error(`Unexpected tokens after end of value`);
+        tokenizer.errorReporter("e009", extraTokens);
     }
 
     if (!value || (typeof value !== "object" && !Array.isArray(value))) {
-        throw new Error(`Expected top level object or array but got: ${typeof value}`);
+        tokenizer.errorReporter("e010", value);
     }
 
     return value;
@@ -152,7 +204,7 @@ export default function jsonParser(text) {
 
 const parseTokens = (tokenizer, depth, token) => {
     if (depth > maxDepth) {
-        throw new Error('Too Deep JSON');
+        tokenizer.errorReporter("e000");
     }
 
     //making sure that the token value is null and it should be assigned to nextToken otherwise it will throw error in below conditions
@@ -160,14 +212,14 @@ const parseTokens = (tokenizer, depth, token) => {
 
     if (nextToken === null && isEndOfTokens) {
         isEndOfTokens = true;
-        throw new Error('Unexpected End of JSON');
+        tokenizer.errorReporter("e011");
     }
 
     if (nextToken === '{') return parseJsonObject(tokenizer, depth + 1);
     if (nextToken === '[') return parseJsonArray(tokenizer, depth + 1);
     if (symbols.includes(nextToken) && nextToken !== '') { //&& nextToken !== '}'
         isEndOfTokens = true;
-        throw new Error(`Unexpected token found: ${nextToken}`);
+        tokenizer.errorReporter("e012", nextToken);
     }
     return nextToken;
 }
@@ -177,7 +229,8 @@ const parseJsonObject = (tokenizer, depth) => {
     const object = {};
     if (depth > maxDepth) {
         isEndOfTokens = true;
-        throw new Error('Too Deep JSON');
+        tokenizer.errorReporter("e000");
+
     }
 
     let nextToken = tokenizer.nextToken();
@@ -185,18 +238,20 @@ const parseJsonObject = (tokenizer, depth) => {
     while (nextToken !== "}") {
         if (nextToken === null && isEndOfTokens) {
             isEndOfTokens = false;
-            throw new Error('Unexpected end of JSON');
+            tokenizer.errorReporter("e011");
+
         }
-        if (typeof nextToken !== 'string') throw new Error(`Expected string but got: ${typeof nextToken}`);
 
         const upcomingToken = tokenizer.nextToken();
 
         if (upcomingToken === null && isEndOfTokens) {
             isEndOfTokens = false;
-            throw new Error('Unexpected end of tokens');
+            tokenizer.errorReporter("e014");
         }
 
-        if (upcomingToken !== ":") throw new Error(`Expected : but got ${upcomingToken}`);
+        if (upcomingToken !== ":") {
+            tokenizer.errorReporter("e015", `${upcomingToken}`);
+        }
 
         object[nextToken] = parseTokens(tokenizer, depth);
 
@@ -205,12 +260,13 @@ const parseJsonObject = (tokenizer, depth) => {
         if (endToken === '}') break;
         if (endToken === ',') {
             nextToken = tokenizer.nextToken();
-            if (nextToken === "}")
-                throw new Error(`Unexpected trailing , in object`);
+            if (nextToken === "}") {
+                tokenizer.errorReporter("e016", nextToken);
+            }
             continue;
         }
         isEndOfTokens = true;
-        throw new Error(`Expected "," or "}" but got: "${endToken}"`);
+        tokenizer.errorReporter("e017");
     }
 
     return object;
@@ -219,7 +275,7 @@ const parseJsonObject = (tokenizer, depth) => {
 const parseJsonArray = (tokenizer, depth) => {
     if (depth > maxDepth) {
         isEndOfTokens = true;
-        throw new Error('Too Deep JSON');
+        tokenizer.errorReporter("e000");
     }
 
     const values = [];
@@ -228,7 +284,7 @@ const parseJsonArray = (tokenizer, depth) => {
     while (nextToken !== ']') {
         if (nextToken === null && isEndOfTokens) {
             isEndOfTokens = false;
-            throw new Error('Unexpected end of array values');
+            tokenizer.errorReporter("e018");
         }
         values.push(parseTokens(tokenizer, depth, nextToken));
 
@@ -236,18 +292,18 @@ const parseJsonArray = (tokenizer, depth) => {
 
         if (nextToken === null && isEndOfTokens) {
             isEndOfTokens = false;
-            throw new Error('Unexpected end of array tokens');
+            tokenizer.errorReporter("e019");
         }
         if (nextToken === ']') break;
         if (nextToken === ',') {
             nextToken = tokenizer.nextToken();
             if (nextToken === ']') {
-                throw new Error('Unexpected trailing comma in array');
+                tokenizer.errorReporter("e020", nextToken);
             }
             continue;
         }
         isEndOfTokens = true;
-        throw new Error(`Expected ',' or ']' but got ${nextToken}`);
+        tokenizer.errorReporter("e021", nextToken);
     }
     return values;
 }
