@@ -4,11 +4,11 @@ import jsonParser from '../index.js';
 
 describe('JSON PARSING', () => {
     const directories = ['./step1/', './step2/', './step3/', './step4/', './step5/']
-
+    const depth = 19;
     function basicTests(jsonValue) {
         const parsedStringWithLibrary = JSON.stringify(jsonValue);
         test(`Custom Parser is able to correctly parse: ${parsedStringWithLibrary}`, () => {
-            expect(jsonParser(parsedStringWithLibrary)).toEqual(jsonValue);
+            expect(jsonParser(parsedStringWithLibrary, depth)).toEqual(jsonValue);
         });
     }
 
@@ -27,12 +27,12 @@ describe('JSON PARSING', () => {
 
                 if (file.startsWith("invalid") || file.startsWith("fail")) {
                     it(`fails to parse invalid JSON in file: ${file}`, () => {
-                        expect(()=>jsonParser(data)).toThrow();
+                        expect(()=>jsonParser(data, depth)).toThrow();
                     });
                 }
                 else {
                     it(`successfully parse valid JSON in file: ${file}`, () => {
-                        const p = jsonParser(data);
+                        const p = jsonParser(data, depth);
                         const q = JSON.parse(data);
                         expect(p).toEqual(q);
                     })
