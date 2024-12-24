@@ -2,17 +2,17 @@ import fs from 'fs';
 import path from 'path';
 import chalk from 'chalk';
 import jsonParser from '../index.js';
-export default function verifyFiles(dirPath, flag) {
+export default function verifyFiles(dirPath, flag, maxDepth) {
     if (flag) {
         try {
             const data = fs.readFileSync(dirPath, "utf8");
-            const parsedData = jsonParser(data);
+            const parsedData = jsonParser(data, maxDepth);
             if (parsedData) {
-                console.log(chalk.green(`Valid Json`));
+                console.log(chalk.greenBright(`Valid Json`),"\n");
             }
         }
         catch (error) {
-            console.log(chalk.red("Invalid JSON file: ",error.message));
+            console.log(chalk.redBright("Invalid JSON file: ",error.message));
         }
     }
     else {
@@ -23,15 +23,15 @@ export default function verifyFiles(dirPath, flag) {
             try {
                 const filePath = path.join(dirPath, file);
                 const data = fs.readFileSync(filePath, "utf8");
-                const parsedData = jsonParser(data);
+                const parsedData = jsonParser(data, maxDepth);
 
                 if (parsedData) {
-                    console.log(chalk.green(`${file}: Valid Json`));
+                    console.log(chalk.greenBright(`${file}: Valid Json\n`));
                 }
                 valid++;
             } catch (error) {
                 invalid++;
-                console.log(chalk.red(`${file} : ${error.message}`));
+                console.log(chalk.redBright(`${file} : ${error.message}`));
             }
         });
         console.log(chalk.bold.red('---------------------------------'));
