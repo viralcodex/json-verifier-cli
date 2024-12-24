@@ -1,4 +1,10 @@
 ## Changelog - JSON-Verifier-CLI
+
+### Version 0.3.1
+#### Added
+Added Option to set max depth for JSON files from CLI itself
+Minor changes to code for better CLI readability
+
 ### Version 0.3.0
 #### Added
 Added error logging and reporting for each JSON file verified on CLI.

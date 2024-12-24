@@ -1,6 +1,5 @@
 import contants from "./lib/constants.js";
 
-const maxDepth = 19;
 const numbers = '0123456789';
 const numberTokens = numbers + '.eE-+';
 const symbols = '{}[]:,';
@@ -9,6 +8,7 @@ const indentation = " \r\n\t";
 const illegalEscapeChar = 'x0\n ';
 const escapeMap = { b: "\b", t: "\t", f: "\f", r: "\r", n: "\n" };
 let isEndOfTokens = false;
+let maxDepth = 19;
 
 class JsonParser {
 
@@ -129,7 +129,7 @@ class JsonParser {
 
             if (char === "'") { //for {'key'...}
                 isEndOfTokens = true;
-                this.errorReporter("e004", "'");
+                this.errorReporter("e004", char);
             }
 
             //parsing numbers
@@ -183,7 +183,8 @@ class JsonParser {
 
 }
 
-export default function jsonParser(text) {
+export default function jsonParser(text, depth) {
+    maxDepth = depth;
     const tokenizer = new JsonParser(text);
     const value = parseTokens(tokenizer, 0);
 
