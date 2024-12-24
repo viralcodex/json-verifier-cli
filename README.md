@@ -17,6 +17,7 @@ You can verify a single file or a folder consisting of JSON files.
   -V, --version                   output the version number
   -f, --file <file_path>          verify the JSON file and parse it for the file path given
   -flr, --folder <folder_path>    verify all the JSON files and parse them for the folder path given
+  -d, --max-depth <number>        set the max depth for the JSON file(s) you want to check
   -h, --help                      display help for command
 ```
 
