@@ -9,7 +9,7 @@ const illegalEscapeChar = 'x0\n ';
 const escapeMap = { b: "\b", t: "\t", f: "\f", r: "\r", n: "\n" };
 let isEndOfTokens = false;
 let maxDepth = 19;
-
+let delimeterInString = false;
 class JsonParser {
 
     constructor(text) {
@@ -18,6 +18,7 @@ class JsonParser {
         this.line = 1;
         this.column = 1;
         this.tabWidth = 4;
+        this.lines = text.split("\n"); //pre splitting the line when initialising
     }
 
     updatePosition(char) {
@@ -31,12 +32,10 @@ class JsonParser {
         else {
             this.column++;
         }
-
     }
 
     errorReporter(eCode, token) {
 
-        const lines = this.text.split("\n");
         const errorLine = lines[this.line - 1].trim() || ""; // Get the line with the error
 
         // const marker = " ".repeat(this.column - shifter - (shifter <= 1 ? 0 : 1)) + "^"; // Place marker at the column
@@ -107,7 +106,6 @@ class JsonParser {
                             continue;
                         }
                         // handle special escape characters
-
                         if (escapeMap[this.text[this.index]]) {
                             token += escapeMap[this.text[this.index]];
                             continue;
@@ -116,15 +114,14 @@ class JsonParser {
 
                     token += this.text[this.index]; //rest of the characters
                 }
-
+                //if we hit the end of the string without a closing quote
                 if (this.text[this.index] !== '"') {
                     isEndOfTokens = true;
-
                     this.errorReporter("e003", token);
-                    // e.g. if we hit the end of the string without a closing quote
                 }
                 this.index++;
-                return token;
+                delimeterInString = token.length === 1 && symbols.includes(token) ? true : false;
+                return delimeterInString ? `"${token}"` : token;
             }
 
             if (char === "'") { //for {'key'...}
@@ -176,7 +173,6 @@ class JsonParser {
             this.errorReporter("e008")
             throw new Error(`Unexpected Character: ${char} at line ${this.line}, column ${this.column}`);
         }
-
         isEndOfTokens = true;
         return null;
     }
@@ -216,13 +212,15 @@ const parseTokens = (tokenizer, depth, token) => {
         tokenizer.errorReporter("e011");
     }
 
+    // console.log(nextToken)
     if (nextToken === '{') return parseJsonObject(tokenizer, depth + 1);
     if (nextToken === '[') return parseJsonArray(tokenizer, depth + 1);
-    if (symbols.includes(nextToken) && nextToken !== '') { //&& nextToken !== '}'
+    if (!delimeterInString && symbols.includes(nextToken) && nextToken !== '') { //&& nextToken !== '}'
+        delimeterInString = false
         isEndOfTokens = true;
         tokenizer.errorReporter("e012", nextToken);
     }
-    return nextToken;
+    return delimeterInString ? nextToken[1] : nextToken;
 }
 
 const parseJsonObject = (tokenizer, depth) => {
@@ -250,7 +248,7 @@ const parseJsonObject = (tokenizer, depth) => {
             tokenizer.errorReporter("e014");
         }
 
-        if (upcomingToken !== ":") {
+        if (upcomingToken !== ":") { 
             tokenizer.errorReporter("e015", `${upcomingToken}`);
         }
 
