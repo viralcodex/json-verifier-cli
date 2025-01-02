@@ -5,14 +5,27 @@ import jsonParser from '../index.js';
 describe('JSON PARSING', () => {
     const directories = ['./step1/', './step2/', './step3/', './step4/', './step5/']
     const depth = 19;
-    function basicTests(jsonValue) {
-        const parsedStringWithLibrary = JSON.stringify(jsonValue);
-        test(`Custom Parser is able to correctly parse: ${parsedStringWithLibrary}`, () => {
-            expect(jsonParser(parsedStringWithLibrary, depth)).toEqual(jsonValue);
-        });
-    }
+    const jsonValues = [
+        { key: "value" },
+        [1, 2, 3],
+        { nested: { key: "value" } },
+        { key : ","},
+        {},
+        [],
+        [{}],
+        [[{}]],
+        [['A']]
+    ]
+    jsonValues.forEach((jsonValue) => {
+        describe('Basic Tests', () => {
+            const parsedStringWithLibrary = JSON.stringify(jsonValue);
+            it(`Custom Parser is able to correctly parse: ${parsedStringWithLibrary}`, () => {
+                expect(jsonParser(parsedStringWithLibrary, depth)).toEqual(jsonValue);
+            });
+        })
+    });
 
-    describe('Standard tests', () => {
+    describe('Standard tests from json.org', () => {
         directories.forEach((dir) => {
             const testDir = path.join(__dirname, dir);
             const filenames = fs.readdirSync(testDir);
@@ -27,7 +40,7 @@ describe('JSON PARSING', () => {
 
                 if (file.startsWith("invalid") || file.startsWith("fail")) {
                     it(`fails to parse invalid JSON in file: ${file}`, () => {
-                        expect(()=>jsonParser(data, depth)).toThrow();
+                        expect(() => jsonParser(data, depth)).toThrow();
                     });
                 }
                 else {
@@ -41,9 +54,6 @@ describe('JSON PARSING', () => {
         })
     });
 
-    basicTests([]);
-    basicTests({});
-    basicTests([{}]);
-    basicTests(["A"]);
+
 });
 
