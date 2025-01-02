@@ -1,4 +1,4 @@
-import contants from "./lib/constants.js";
+import errorConstants from "./lib/constants.js";
 
 const numbers = '0123456789';
 const numberTokens = numbers + '.eE-+';
@@ -36,9 +36,8 @@ class JsonParser {
 
     errorReporter(eCode, token) {
 
-        const errorLine = lines[this.line - 1].trim() || ""; // Get the line with the error
+        const errorLine = this.lines[this.line - 1].trim() || ""; // Get the line with the error
 
-        // const marker = " ".repeat(this.column - shifter - (shifter <= 1 ? 0 : 1)) + "^"; // Place marker at the column
         let indexOfInvalidToken = errorLine.lastIndexOf(token) < 0 ? 0 : errorLine.lastIndexOf(token);
         if (eCode === "e010")
             indexOfInvalidToken = 0;
@@ -51,10 +50,10 @@ class JsonParser {
             (this.column.length - token?.length) : indexOfInvalidToken;
 
         const marker = " ".repeat(spaceFormula) + "^";
-
+        const error = errorConstants[eCode];
+        const errorDescription = `${error.message}\n${error.remediation}`
         // Construct detailed error message
-        const errorContext = `${contants[eCode]} at line ${this.line}:\n${errorLine}\n${marker}\n`;
-
+        const errorContext = `Error at line ${this.line}:\n${errorLine}\n${marker}\n${errorDescription}`
         throw new Error(errorContext);
     }
 
@@ -74,6 +73,8 @@ class JsonParser {
                 this.index++;
                 return char;
             }
+            // if(this.line === 7206)
+            //     debugger;
 
             if (this.text[this.index] === '"') { //for checking strings
                 let token = "";
@@ -248,7 +249,7 @@ const parseJsonObject = (tokenizer, depth) => {
             tokenizer.errorReporter("e014");
         }
 
-        if (upcomingToken !== ":") { 
+        if (upcomingToken !== ":") {
             tokenizer.errorReporter("e015", `${upcomingToken}`);
         }
 

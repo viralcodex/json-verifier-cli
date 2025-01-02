@@ -9,7 +9,7 @@ describe('JSON PARSING', () => {
         { key: "value" },
         [1, 2, 3],
         { nested: { key: "value" } },
-        { key : ","},
+        { key: "," },
         {},
         [],
         [{}],
@@ -53,7 +53,5 @@ describe('JSON PARSING', () => {
             });
         })
     });
-
-
 });
 
