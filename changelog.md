@@ -1,5 +1,14 @@
 ## Changelog - JSON-Verifier-CLI
 
+### Version 0.4.0
+#### Added
+ - Added a feature to log details of the verification of the JSON files of a folder
+
+#### Fixed
+ - Error constants file by adding more descriptions in the errors (description, severity and remediation)
+ - CLI text changes for improved error logging and readability
+
+
 ### Version 0.3.2
 #### Fixed
  - Fixed the issue where single character string having [ { , . } ] symbols threw invalid JSON.
