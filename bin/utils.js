@@ -4,22 +4,28 @@ import chalk from 'chalk';
 import jsonParser from '../index.js';
 
 const dateTime = new Date();
+const loggingFlagsN = ["N", "n"];
+const loggingFlagsY = ["Y", "y"];
 const lineBreak = '---------------------------------';
-export default function verifyFiles(dirPath, flag, maxDepth) {
+export default function verifyFiles(dirPath, flag, maxDepth, logging) {
     if (flag) {
         try {
             const data = fs.readFileSync(dirPath, "utf8");
             const parsedData = jsonParser(data, maxDepth);
             if (parsedData) {
-                console.log(chalk.greenBright(`Valid Json`), "\n");
+                console.log(`\n${chalk.greenBright(`Valid Json`)}`);
+                if (loggingFlagsN.includes(logging)) console.log(`\n${lineBreak}\n\n${chalk.bold.cyanBright("Logging was disabled for this verification, please re-run it without any flag to log the results")}\n`);
+                if (loggingFlagsY.includes(logging)) logErrorsInFile(`${path.basename(dirPath)}: Valid Json`);
             }
         }
         catch (error) {
-            console.log(chalk.redBright("Invalid JSON file: ", error.message));
+            console.log(`\n${chalk.redBright("Invalid JSON file: ", error.message)}`);
+            if (loggingFlagsN.includes(logging)) console.log(`\n${lineBreak}\n\n${chalk.bold.cyanBright("Logging was disabled for this verification, please re-run it without any flag to log the results")}\n`);
+            if (loggingFlagsY.includes(logging)) logErrorsInFile(error.message);
         }
     }
     else {
-        let allErrors = ``;
+        let allFileLogs = ``;
         let valid = 0;
         let invalid = 0;
         const files = fs.readdirSync(dirPath);
@@ -31,12 +37,13 @@ export default function verifyFiles(dirPath, flag, maxDepth) {
                 const parsedData = jsonParser(data, maxDepth);
 
                 if (parsedData) {
-                    console.log(chalk.greenBright(`${file}: Valid Json\n`)+`\n${lineBreak}\n`);
+                    console.log(chalk.greenBright(`${file}: Valid Json\n`) + `\n${lineBreak}\n`);
+                    allFileLogs += `${file}: Valid Json` + `\n${lineBreak}\n`;
                 }
                 valid++;
             } catch (error) {
                 invalid++;
-                allErrors += `[${dateTime.toISOString()}]: ${file}\n${error.message}\n${lineBreak}\n`
+                if (loggingFlagsY.includes(logging)) allFileLogs += `[${dateTime.toISOString()}]: ${file}\n${error.message}\n${lineBreak}\n`
                 console.log(chalk.bold.redBright(`${file}\n`)
                     + chalk.redBright(`${error.message}\n`)
                     + chalk.bold.gray(`\n${lineBreak}\n`));
@@ -46,9 +53,9 @@ export default function verifyFiles(dirPath, flag, maxDepth) {
             chalk.bold.magenta(`Total files verified: ${files.length}\n`),
             chalk.bold.greenBright(`\nValid JSONs: ${valid}\n`),
             chalk.bold.redBright(`\nInvalid JSONs: ${invalid}`));
-
-        //logging errors at last
-        logErrorsInFile(allErrors);
+        if (loggingFlagsN.includes(logging)) console.log(`\n${lineBreak}\n\n${chalk.bold.cyanBright("Logging was disabled for this verification, please re-run it without any flag to log the results")}\n`);
+        //logging errors if enabled
+        if (loggingFlagsY.includes(logging)) logErrorsInFile(allFileLogs);
     }
 }
 

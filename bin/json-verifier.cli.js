@@ -10,13 +10,14 @@ program.version("0.0.1")
     .option("-f, --file <file_path>", "provide the file path for the JSON file to be checked")
     .option("-flr, --folder <folder_path>", "provide the folder path with JSON files to be checked")
     .option("-d, --max-depth <number>", "Set your max-depth for the JSON file(s) you want to check", 19)
+    .option("-l --logging <Y/N>", "Choose if you want to log the results of this verification. By default it is enabled", "Y")
     .action((options) => {
         const maxDepth = parseInt(options.maxDepth, 10);
         if (isNaN(maxDepth) || maxDepth <= 0) {
             console.error(chalk.red.bold("Error: max-depth must be a positive integer."));
             process.exit(1);
         }
-        verifyFiles(options.file || options.folder, !!options.file, maxDepth);
+        verifyFiles(options.file || options.folder, !!options.file, maxDepth, options.logging);
     });
 if (process.argv.length <= 2) {
     program.outputHelp();
