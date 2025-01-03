@@ -23,7 +23,8 @@ You can verify a single file or a folder consisting of JSON files.
   -h, --help                      display help for available options
 ```
 <h3>Examples</h3>
-
+<li>![image](https://github.com/user-attachments/assets/09bf705a-9b31-4b49-bc5b-6441ae341c4b)</li>
+<li>![image](https://github.com/user-attachments/assets/b5536e7d-524a-470c-88dc-ef5f1f348c01)</li>
 
 <h3>(WORK IN PROGRESS)For using the package in your code to check for JSON objects validity and parse it</h3>
 <li>Install the package as above, then take reference from below to import and use it</li>
