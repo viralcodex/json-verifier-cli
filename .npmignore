@@ -4,3 +4,4 @@ tests/
 *.log
 *.config.js
 *-test.d.ts
+changelog.md
