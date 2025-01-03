@@ -1,5 +1,14 @@
 ## Changelog - JSON-Verifier-CLI
 
+### Version 0.4.1
+
+#### Changed
+ - Constants file is revamped to include all the constants fron the project
+ - Refactored project structure
+ - Updated Readme with new content and fixed some grammar
+ - Changed references for the constants throghout the project
+ - Changed some language structure in CLI options
+
 ### Version 0.4.0
 
 #### Added

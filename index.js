@@ -1,12 +1,5 @@
-import errorConstants from "./lib/constants.js";
+import { parsingConstants, errorConstants } from "./lib/constants.js";
 
-const numbers = '0123456789';
-const numberTokens = numbers + '.eE-+';
-const symbols = '{}[]:,';
-const keywords = ['true', 'false', 'null'];
-const indentation = " \r\n\t";
-const illegalEscapeChar = 'x0\n ';
-const escapeMap = { b: "\b", t: "\t", f: "\f", r: "\r", n: "\n" };
 let isEndOfTokens = false;
 let maxDepth = 19;
 let delimeterInString = false;
@@ -43,7 +36,7 @@ class JsonParser {
             indexOfInvalidToken = 0;
         if (eCode === "e001" || eCode === "e002" || eCode === "e004")
             indexOfInvalidToken = errorLine.indexOf(token) < 0 ? 0 : errorLine.indexOf(token);
-        if (eCode === "e003" || eCode === "e011" || eCode === "e014" || eCode === "e018" || eCode === "e019")
+        if (eCode === "e003" || eCode === "e011" || eCode === "e013" || eCode === "e017" || eCode === "e018")
             indexOfInvalidToken = errorLine.length;
 
         const spaceFormula = this.column.length - token?.length - 1 > indexOfInvalidToken ?
@@ -51,7 +44,7 @@ class JsonParser {
 
         const marker = " ".repeat(spaceFormula) + "^";
         const error = errorConstants[eCode];
-        const errorDescription = `${error.message}\n${error.remediation}`
+        const errorDescription = `${error.errorType}: ${error.message}\n${error.remediation}`
         // Construct detailed error message
         const errorContext = `Error at line ${this.line}:\n${errorLine}\n${marker}\n${errorDescription}`
         throw new Error(errorContext);
@@ -64,19 +57,19 @@ class JsonParser {
 
             this.updatePosition(char);
 
-            if (indentation.includes(char)) { //for space, \n, \t, etc in the string
+            if (parsingConstants.indentation.includes(char)) { //for space, \n, \t, etc in the string
                 this.index++;
                 continue;
             }
 
-            if (symbols.includes(char)) {
+            if (parsingConstants.symbols.includes(char)) {
                 this.index++;
                 return char;
             }
             // if(this.line === 7206)
             //     debugger;
 
-            if (this.text[this.index] === '"') { //for checking strings
+            if (char === '"') { //for checking strings
                 let token = "";
                 while (this.text[++this.index] != '"') {
                     this.updatePosition(this.text[this.index]);
@@ -90,7 +83,7 @@ class JsonParser {
                     if (this.text[this.index] === "\\") {
                         this.updatePosition(this.text[this.index]);
                         this.index++;
-                        if (illegalEscapeChar.includes(this.text[this.index])) {
+                        if (parsingConstants.illegalEscapeChar.includes(this.text[this.index])) {
                             const a = this.text[this.index - 1];
                             isEndOfTokens = true;
 
@@ -107,8 +100,8 @@ class JsonParser {
                             continue;
                         }
                         // handle special escape characters
-                        if (escapeMap[this.text[this.index]]) {
-                            token += escapeMap[this.text[this.index]];
+                        if (parsingConstants.escapeMap[this.text[this.index]]) {
+                            token += parsingConstants.escapeMap[this.text[this.index]];
                             continue;
                         }
                     }
@@ -121,7 +114,7 @@ class JsonParser {
                     this.errorReporter("e003", token);
                 }
                 this.index++;
-                delimeterInString = token.length === 1 && symbols.includes(token) ? true : false;
+                delimeterInString = token.length === 1 && parsingConstants.symbols.includes(token) ? true : false;
                 return delimeterInString ? `"${token}"` : token;
             }
 
@@ -131,16 +124,16 @@ class JsonParser {
             }
 
             //parsing numbers
-            if (numberTokens.includes(char) || char === "-") {
+            if (parsingConstants.numberTokens.includes(char) || char === "-") {
                 //leading zeroes not allowed
-                if (this.text[this.index] === '0' && numbers.includes(this.text[this.index + 1])) {
+                if (this.text[this.index] === '0' && parsingConstants.numbers.includes(this.text[this.index + 1])) {
                     isEndOfTokens = true;
                     this.errorReporter("e005", this.text[this.index]);
                 }
 
                 let numStr = this.text[this.index];
 
-                while (numberTokens.includes(this.text[++this.index])) {
+                while (parsingConstants.numberTokens.includes(this.text[++this.index])) {
                     this.updatePosition(this.text[this.index]);
                     numStr += this.text[this.index];
                 }
@@ -163,12 +156,12 @@ class JsonParser {
                     alphaToken += this.text[this.index];
                 }
 
-                if (!keywords.includes(alphaToken)) {
+                if (!parsingConstants.keywords.includes(alphaToken)) {
                     isEndOfTokens = true;
                     this.errorReporter("e007", alphaToken);
                 }
 
-                return alphaToken === keywords[0] ? true : alphaToken === keywords[1] ? false : null;
+                return alphaToken === parsingConstants.keywords[0] ? true : alphaToken === parsingConstants.keywords[1] ? false : null;
             }
             isEndOfTokens = true;
             this.errorReporter("e008")
@@ -216,7 +209,7 @@ const parseTokens = (tokenizer, depth, token) => {
     // console.log(nextToken)
     if (nextToken === '{') return parseJsonObject(tokenizer, depth + 1);
     if (nextToken === '[') return parseJsonArray(tokenizer, depth + 1);
-    if (!delimeterInString && symbols.includes(nextToken) && nextToken !== '') { //&& nextToken !== '}'
+    if (!delimeterInString && parsingConstants.symbols.includes(nextToken) && nextToken !== '') { //&& nextToken !== '}'
         delimeterInString = false
         isEndOfTokens = true;
         tokenizer.errorReporter("e012", nextToken);
@@ -246,11 +239,11 @@ const parseJsonObject = (tokenizer, depth) => {
 
         if (upcomingToken === null && isEndOfTokens) {
             isEndOfTokens = false;
-            tokenizer.errorReporter("e014");
+            tokenizer.errorReporter("e013");
         }
 
         if (upcomingToken !== ":") {
-            tokenizer.errorReporter("e015", `${upcomingToken}`);
+            tokenizer.errorReporter("e014", `${upcomingToken}`);
         }
 
         object[nextToken] = parseTokens(tokenizer, depth);
@@ -261,12 +254,12 @@ const parseJsonObject = (tokenizer, depth) => {
         if (endToken === ',') {
             nextToken = tokenizer.nextToken();
             if (nextToken === "}") {
-                tokenizer.errorReporter("e016", nextToken);
+                tokenizer.errorReporter("e015", nextToken);
             }
             continue;
         }
         isEndOfTokens = true;
-        tokenizer.errorReporter("e017");
+        tokenizer.errorReporter("e016");
     }
 
     return object;
@@ -284,7 +277,7 @@ const parseJsonArray = (tokenizer, depth) => {
     while (nextToken !== ']') {
         if (nextToken === null && isEndOfTokens) {
             isEndOfTokens = false;
-            tokenizer.errorReporter("e018");
+            tokenizer.errorReporter("e017");
         }
         values.push(parseTokens(tokenizer, depth, nextToken));
 
@@ -292,18 +285,18 @@ const parseJsonArray = (tokenizer, depth) => {
 
         if (nextToken === null && isEndOfTokens) {
             isEndOfTokens = false;
-            tokenizer.errorReporter("e019");
+            tokenizer.errorReporter("e018");
         }
         if (nextToken === ']') break;
         if (nextToken === ',') {
             nextToken = tokenizer.nextToken();
             if (nextToken === ']') {
-                tokenizer.errorReporter("e020", nextToken);
+                tokenizer.errorReporter("e019", nextToken);
             }
             continue;
         }
         isEndOfTokens = true;
-        tokenizer.errorReporter("e021", nextToken);
+        tokenizer.errorReporter("e020", nextToken);
     }
     return values;
 }
