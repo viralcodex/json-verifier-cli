@@ -1,22 +1,37 @@
 import fs from 'fs';
 import path from 'path';
-import jsonParser from '../index.js';
+import { describe, it, expect, test } from 'vitest';
+import jsonParser from '../lib/jsonParser.js';
+import { verifyJson, verifyJsonFromPath } from '../index.js';
 
-describe('JSON PARSING', () => {
-    const directories = ['./step1/', './step2/', './step3/', './step4/', './step5/']
-    const depth = 19;
-    const jsonValues = [
-        { key: "value" },
-        [1, 2, 3],
-        { nested: { key: "value" } },
-        { key: "," },
-        {},
-        [],
-        [{}],
-        [[{}]],
-        [['A']]
-    ]
-    jsonValues.forEach((jsonValue) => {
+const directories = ['./step1/', './step2/', './step3/', './step4/', './step5/']
+const validJsonValues = [
+    { key: "value" },
+    [1, 2, 3],
+    { nested: { key: "value" } },
+    { key: "," },
+    {},
+    [],
+    [{}],
+    [[{}]],
+    [['A']],
+];
+
+const validCodeJsonValues = [
+    `{ "key": "value" }`,
+    "[1, 2, 3]",
+    '{ "nested": { "key": "value" } }',
+]
+
+const invalidCodeJsonValues = [
+    `{ key: "value" }`,
+    "[1, 2, ]",
+    '{ "nested": { "key": "value" }',
+]
+const depth = 19;
+
+describe('tests for jsonParser.js', () => {
+    validJsonValues.forEach((jsonValue) => {
         describe('Basic Tests', () => {
             const parsedStringWithLibrary = JSON.stringify(jsonValue);
             it(`Custom Parser is able to correctly parse: ${parsedStringWithLibrary}`, () => {
@@ -55,3 +70,34 @@ describe('JSON PARSING', () => {
     });
 });
 
+describe('tests for index.js', () => {
+    it('verifyJson', () => {
+        validJsonValues.forEach((jsonValue) => {
+            const parsedStringWithCustom = verifyJson(jsonValue, depth);
+            expect(parsedStringWithCustom).toEqual(jsonValue);
+        });
+        validCodeJsonValues.forEach((codeJsonValue) => {
+            const parsedStringWithCustom = verifyJson(codeJsonValue, depth);
+            expect(parsedStringWithCustom).toEqual(JSON.parse(codeJsonValue));
+        })
+        invalidCodeJsonValues.forEach((codeJsonValue) => {
+            const parsedStringWithCustom = verifyJson(codeJsonValue, depth);
+            expect(parsedStringWithCustom).toBeInstanceOf(Error);
+        })
+    });
+
+    it('verifyJsonFromPath', () => {
+        directories.forEach((dir) => {
+            const testDir = path.join(__dirname, dir);
+            const parsedResults = verifyJsonFromPath(testDir, depth);
+            parsedResults.forEach((result) => {
+                if (result.error) {
+                    expect(result.error).toBeNull();
+                }
+                else {
+                    expect(result.data).not.toBeNull();
+                }
+            });
+        });
+    });
+});

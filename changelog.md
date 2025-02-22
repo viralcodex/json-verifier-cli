@@ -1,13 +1,36 @@
 ## Changelog - JSON-Verifier-CLI
 
+### Version 0.5.0
+
+#### Changed
+
+- constants are moved to a single constants file (for translations later down the road)
+- Project structure is changed with wrapper functions to be exposed kept in index.js
+- main code moved to jsonParser.js
+- refactored code to fetch messages from constants.js
+- Changed testing lib from jest to vitest
+- Refactored utils module making it readable and support new functions in index.js
+- changed option flag for folder from -flr to -fd
+
+#### Added
+
+- Functions to be exported and used in other code modules. (index.js)
+- Tests for cli file and index.js
+- index.js => jsonParser.js
+
+#### Removed
+
+- methods from utils while refactoring
+
 ### Version 0.4.1
 
 #### Changed
- - Constants file is revamped to include all the constants fron the project
- - Refactored project structure
- - Updated Readme with new content and fixed some grammar
- - Changed references for the constants throghout the project
- - Changed some language structure in CLI options
+
+- Constants file is revamped to include all the constants fron the project
+- Refactored project structure
+- Updated Readme with new content and fixed some grammar
+- Changed references for the constants throghout the project
+- Changed some language structure in CLI options
 
 ### Version 0.4.0
 

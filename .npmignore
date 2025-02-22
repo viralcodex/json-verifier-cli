@@ -5,3 +5,4 @@ tests/
 *.config.js
 *-test.d.ts
 changelog.md
+coverage
