@@ -26,7 +26,7 @@ describe('json-verifier CLI', () => {
     });
     it('should display help when no arguments are passed', async () => {
         const { stdout } = await runCLI('');
-        expect(stdout).toContain('Usage:');
+        expect(stdout).toContain('Usage: json-verifier.cli [options]');
         expect(stdout).toContain('--file');
         expect(stdout).toContain('--folder');
         expect(stdout).toContain('--max-depth');

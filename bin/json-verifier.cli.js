@@ -16,15 +16,17 @@ program.version("0.0.1")
     .option(consoleConstants.options.maxDepth.command, consoleConstants.options.maxDepth.description, 19)
     .option(consoleConstants.options.logging.command, consoleConstants.options.logging.description, consoleConstants.yes)
     .action((options) => {
-            const maxDepth = parseInt(options.maxDepth, 10);
+        if (options && (options.file || options.folder)) {
+            const maxDepth = parseInt(options?.maxDepth, 10);
             if (isNaN(maxDepth) || maxDepth <= 0) {
                 console.error(chalk.red.bold(consoleConstants.maxDepthError));
             }
-            verifyFiles(options.file || options.folder, !!options.file, maxDepth, options.logging);
-        });
-    if (process.argv.length <= 2) {
-    program.outputHelp();
-    process.exit(0);
-}
+            verifyFiles(options?.file || options?.folder, !!options?.file, maxDepth, options?.logging);
+        }
+        else {
+            program.outputHelp();
+            process.exit(0);
+        }
+    });
 
 program.showHelpAfterError().parse(process.argv);
