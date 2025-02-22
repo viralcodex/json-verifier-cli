@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import path from 'path';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { consoleConstants } from '../lib/constants.js';
 
 // CLI Path
@@ -10,7 +10,7 @@ const cliPath = path.resolve(__dirname, '../bin/json-verifier.cli.js');
 const runCLI = (args) => {
     return new Promise((resolve, reject) => {
         const sanitizedArgs = args.replace(/[^a-zA-Z0-9\-_.\/ ]/g, '');
-        exec(`node ${cliPath} ${sanitizedArgs}`, (error, stdout, stderr) => {
+        execFile('node', [cliPath, ...sanitizedArgs.split(' ')], (error, stdout, stderr) => {
             if (error) {
                 reject({ error, stderr });
             } else {
