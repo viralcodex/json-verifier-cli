@@ -9,7 +9,8 @@ const cliPath = path.resolve(__dirname, '../bin/json-verifier.cli.js');
 // Helper to run the CLI
 const runCLI = (args) => {
     return new Promise((resolve, reject) => {
-        exec(`node ${cliPath} ${args}`, (error, stdout, stderr) => {
+        const sanitizedArgs = args.replace(/[^a-zA-Z0-9\-_.\/ ]/g, '');
+        exec(`node ${cliPath} ${sanitizedArgs}`, (error, stdout, stderr) => {
             if (error) {
                 reject({ error, stderr });
             } else {
