@@ -95,4 +95,5 @@
 #### Added
 
 <b>Initial Release</b>
--Basic code functionalities and tests
+
+- Basic code functionalities and tests
