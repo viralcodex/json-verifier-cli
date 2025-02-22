@@ -1,6 +1,6 @@
 {
   "name": "json-verifier-cli",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "JSON VERIFIER CLI\nCheck whether the JSON files are valid or not and parse one or all of them together.",
   "repository": {
     "type": "git",
