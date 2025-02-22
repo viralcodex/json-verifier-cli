@@ -2,26 +2,31 @@
 
 import { program } from 'commander';
 import chalk from 'chalk';
-import verifyFiles from '../lib/utils.js';
+import { verifyFiles } from '../lib/utils.js';
+import { consoleConstants } from '../lib/constants.js';
+
+
+program.exitOverride();
 
 program.version("0.0.1")
     .description(
-    chalk.cyanBright.bold.underline('JSON VERIFIER CLI v0.0.1\nCheck whether the JSON files are valid or not and parse one or all of them together.\nJust open the terminal in the directory your files/folders are present and use one of the following commands.'))
-    .option("-f, --file <file_path>", "provide the file path for the JSON file to be checked")
-    .option("-flr, --folder <folder_path>", "provide the folder path with JSON files to be checked")
-    .option("-d, --max-depth <number>", "Set your max-depth for the JSON file(s) you want to check. Default value is 19", 19)
-    .option("-l --logging <Y/N>", "Choose if you want to disable logging the results of this verification or not. Logging is enabled by default", "Y")
+        chalk.cyanBright.bold.underline(consoleConstants.packageDescription))
+    .option(consoleConstants.options.file.command, consoleConstants.options.file.description)
+    .option(consoleConstants.options.folder.command, consoleConstants.options.folder.description)
+    .option(consoleConstants.options.maxDepth.command, consoleConstants.options.maxDepth.description, 19)
+    .option(consoleConstants.options.logging.command, consoleConstants.options.logging.description, consoleConstants.yes)
     .action((options) => {
-        const maxDepth = parseInt(options.maxDepth, 10);
-        if (isNaN(maxDepth) || maxDepth <= 0) {
-            console.error(chalk.red.bold("Error: max-depth must be a positive integer."));
-            process.exit(1);
+        if (options && (options.file || options.folder)) {
+            const maxDepth = parseInt(options?.maxDepth, 10);
+            if (isNaN(maxDepth) || maxDepth <= 0) {
+                console.error(chalk.red.bold(consoleConstants.maxDepthError));
+            }
+            verifyFiles(options?.file || options?.folder, !!options?.file, maxDepth, options?.logging);
         }
-        verifyFiles(options.file || options.folder, !!options.file, maxDepth, options.logging);
+        else {
+            program.outputHelp();
+            process.exit(0);
+        }
     });
-if (process.argv.length <= 2) {
-    program.outputHelp();
-    process.exit(0);
-}
 
 program.showHelpAfterError().parse(process.argv);
